@@ -1,4 +1,5 @@
 ﻿using CinemaAppBE.Data;
+using CinemaAppBE.DTO;
 using CinemaAppBE.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -20,15 +21,51 @@ namespace CinemaAppBE.Controllers
 
         //[Authorize]
         [HttpPost("[action]")]
-        public async Task<ActionResult> Post([FromBody] Reservation reservationObj)
+        public async Task<ActionResult> Post([FromBody] AddReservationDTO reservationObj)
         {
             try
             {
-                reservationObj.ReservationTime = DateTime.Now;
-                await _db.Reservations.AddAsync(reservationObj);
+                var reservation = new Reservation()
+                {
+                    Id = Guid.NewGuid(),
+                    Phone = reservationObj.Phone,
+                    Price = reservationObj.Price,
+                    Quantity = reservationObj.Quantity,
+                    UserId = reservationObj.UserId,
+                    MovieId = reservationObj.MovieId,
+                    ReservationTime = DateTime.Now,
+                };
+
+                await _db.Reservations.AddAsync(reservation);
                 await _db.SaveChangesAsync();
 
-                return StatusCode(StatusCodes.Status201Created, reservationObj);
+                return StatusCode(StatusCodes.Status201Created, reservation);
+            }
+            catch (Exception err)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, err.Message);
+            }
+        }
+        
+        //Xem chi tiết vé
+        [HttpGet("[action]")]
+        public async Task<ActionResult> GetTickets([FromQuery] Guid userId)
+        {
+            try
+            {
+                var tickets = (from reservation in _db.Reservations
+                               join movie in _db.Movies on reservation.MovieId equals movie.Id
+                               where reservation.UserId.Equals(userId)
+                               select new
+                               {
+                                   FullImageUrl = movie.FullImageUrl,
+                                   PlayingDate = movie.PlayingDate,
+                                   PlayingTime = movie.PlayingTime,
+                                   Name = movie.Name,
+                                   ReservationTime = reservation.ReservationTime,
+                               }).ToList();
+
+                return StatusCode(StatusCodes.Status200OK, tickets);
             }
             catch (Exception err)
             {
@@ -36,27 +73,36 @@ namespace CinemaAppBE.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpGet]
-        public IActionResult GetReservations()
+
+        //[Authorize(Roles = "Admin")]
+        [HttpGet("[action]")]
+        public ActionResult GetReservations()
         {
-            var reservations = from reservation in _db.Reservations
-                               join customer in _db.Users on reservation.UserId equals customer.Id
-                               join movie in _db.Movies on reservation.MovieId equals movie.Id
-                               select new
-                               {
-                                   Id = reservation.Id,
-                                   ReservationTime = reservation.ReservationTime,
-                                   CustomerName = customer.Name,
-                                   MovieName = movie.Name
-                               };
-            return Ok(reservations);
+            try
+            {
+                var reservations = from reservation in _db.Reservations
+                                   join customer in _db.Users on reservation.UserId equals customer.Id
+                                   join movie in _db.Movies on reservation.MovieId equals movie.Id
+                                   select new
+                                   {
+                                       Id = reservation.Id,
+                                       ReservationTime = reservation.ReservationTime,
+                                       CustomerName = customer.Name,
+                                       MovieName = movie.Name
+                                   };
+
+                return StatusCode(StatusCodes.Status200OK, reservations);
+            }
+            catch (Exception err)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, err.Message);
+            }
         }
 
 
-        [Authorize(Roles = "Admin")]
-        [HttpGet("{id}")]
-        public IActionResult GetReservationDetail(int id)
+        //[Authorize(Roles = "Admin")]
+        [HttpGet("{id:Guid}")]
+        public ActionResult GetReservationDetail([FromBody] Guid id)
         {
             var reservationResult = (from reservation in _db.Reservations
                                      join customer in _db.Users on reservation.UserId equals customer.Id
@@ -69,29 +115,35 @@ namespace CinemaAppBE.Controllers
                                          CustomerName = customer.Name,
                                          MovieName = movie.Name,
                                          Email = customer.Email,
-                                         Qty = reservation.Qty,
+                                         Quantity = reservation.Quantity,
                                          Price = reservation.Price,
                                          Phone = reservation.Phone,
                                          PlayingDate = movie.PlayingDate,
                                          PlayingTime = movie.PlayingTime,
                                      }).FirstOrDefault();
-            return Ok(reservationResult);
+            if (reservationResult != null)
+            {
+                return StatusCode(StatusCodes.Status200OK ,reservationResult);
+            }
+
+            return StatusCode(StatusCodes.Status404NotFound, "Not Found!");
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        //[Authorize(Roles = "Admin")]
+        [HttpDelete("{id:Guid}")]
+        public async Task<ActionResult> Delete([FromBody] Guid id)
         {
-            var reservation = _db.Reservations.Find(id);
+            var reservation = await _db.Reservations.FindAsync(id);
             if (reservation == null)
             {
-                return NotFound("No record found against this Id");
+                return StatusCode(StatusCodes.Status404NotFound, "Not Found!");
             }
             else
             {
                 _db.Reservations.Remove(reservation);
-                _db.SaveChanges();
-                return Ok("Record deleted");
+                await _db.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status200OK, reservation);
             }
         }
     }
