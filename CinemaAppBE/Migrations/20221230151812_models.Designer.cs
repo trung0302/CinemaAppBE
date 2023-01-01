@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CinemaAppBE.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221229113802_CreateDb")]
-    partial class CreateDb
+    [Migration("20221230151812_models")]
+    partial class models
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -136,6 +136,8 @@ namespace CinemaAppBE.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Tokens");
                 });
 
@@ -161,6 +163,9 @@ namespace CinemaAppBE.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("VerifyToken")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
@@ -181,6 +186,15 @@ namespace CinemaAppBE.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CinemaAppBE.Models.Token", b =>
+                {
+                    b.HasOne("CinemaAppBE.Models.User", null)
+                        .WithMany("Token")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CinemaAppBE.Models.Movie", b =>
                 {
                     b.Navigation("Reservations");
@@ -189,6 +203,8 @@ namespace CinemaAppBE.Migrations
             modelBuilder.Entity("CinemaAppBE.Models.User", b =>
                 {
                     b.Navigation("Reservations");
+
+                    b.Navigation("Token");
                 });
 #pragma warning restore 612, 618
         }
