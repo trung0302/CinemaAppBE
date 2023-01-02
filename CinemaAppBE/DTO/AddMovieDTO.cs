@@ -29,6 +29,8 @@ namespace CinemaAppBE.DTO
         [Required]
         public string FullImageUrl { get; set; }
         [Required]
+        public bool Advice { get; set; } = false;
+        [Required]
         public DateTime CreatedAt { get; set; }
         [Required]
         public DateTime UpdatedAt { get; set; }

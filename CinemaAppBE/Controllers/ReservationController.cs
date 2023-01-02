@@ -31,6 +31,7 @@ namespace CinemaAppBE.Controllers
                     Phone = reservationObj.Phone,
                     Price = reservationObj.Price,
                     Quantity = reservationObj.Quantity,
+                    PhuongThuc = reservationObj.PhuongThuc,
                     UserId = reservationObj.UserId,
                     MovieId = reservationObj.MovieId,
                     ReservationTime = DateTime.Now,
@@ -58,10 +59,13 @@ namespace CinemaAppBE.Controllers
                                where reservation.UserId.Equals(userId)
                                select new
                                {
-                                   FullImageUrl = movie.FullImageUrl,
+                                   Name = movie.Name,
+                                   Duration = movie.Duration,
                                    PlayingDate = movie.PlayingDate,
                                    PlayingTime = movie.PlayingTime,
-                                   Name = movie.Name,
+                                   Price = reservation.Price,
+                                   Quantity = reservation.Quantity,
+                                   ImageUrl = movie.ImageUrl,
                                    ReservationTime = reservation.ReservationTime,
                                }).ToList();
 
