@@ -73,7 +73,10 @@ namespace CinemaAppBE.Controllers
                 var token = _auth.GenerateToken(userAuth.Email, userAuth.Role, _config);
                 var userResponse = new UserResponse
                 {
-                    User = userAuth,
+                    Id = userAuth.Id,
+                    Name = userAuth.Name,
+                    Email = userAuth.Email,
+                    Role = userAuth.Role,
                     Token = token
                 };
 
