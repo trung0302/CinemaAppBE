@@ -1,6 +1,7 @@
 ﻿using CinemaAppBE.Data;
-using CinemaAppBE.DTO;
+using CinemaAppBE.DTO.Reservation;
 using CinemaAppBE.Models;
+using CinemaAppBE.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,9 +15,11 @@ namespace CinemaAppBE.Controllers
     public class ReservationController : ControllerBase
     {
         private readonly DataContext _db;
-        public ReservationController(DataContext db)
+        private readonly IEmailService _email;
+        public ReservationController(DataContext db, IEmailService email)
         {
             _db = db;
+            _email = email;
         }
 
         //[Authorize]
@@ -39,6 +42,10 @@ namespace CinemaAppBE.Controllers
 
                 await _db.Reservations.AddAsync(reservation);
                 await _db.SaveChangesAsync();
+
+                var customer = _db.Users.FirstOrDefault(u => u.Id == reservation.UserId);
+
+                _email.SendTicketEmail(customer.Email, reservation);
 
                 return StatusCode(StatusCodes.Status201Created, reservation);
             }
@@ -67,7 +74,9 @@ namespace CinemaAppBE.Controllers
                                    Quantity = reservation.Quantity,
                                    ImageUrl = movie.ImageUrl,
                                    ReservationTime = reservation.ReservationTime,
-                               }).ToList();
+                               })
+                               .OrderByDescending(i => i.ReservationTime)
+                               .ToList();
 
                 return StatusCode(StatusCodes.Status200OK, tickets);
             }

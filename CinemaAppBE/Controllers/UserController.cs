@@ -1,12 +1,13 @@
 ﻿using AuthenticationPlugin;
 using CinemaAppBE.Auth;
 using CinemaAppBE.Data;
-using CinemaAppBE.DTO;
+using CinemaAppBE.DTO.User;
 using CinemaAppBE.Models;
 using CinemaAppBE.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -67,7 +68,6 @@ namespace CinemaAppBE.Controllers
         public async Task<ActionResult> Login([FromBody] UserLoginDTO user)
         {
             var userAuth = _auth.Authenticate(user, _db);
-            Console.WriteLine("- Auth: ", userAuth);
             if (userAuth != null)
             {
                 var token = _auth.GenerateToken(userAuth.Email, userAuth.Role, _config);
@@ -76,6 +76,7 @@ namespace CinemaAppBE.Controllers
                     Id = userAuth.Id,
                     Name = userAuth.Name,
                     Email = userAuth.Email,
+                    Password = userAuth.Password,
                     Role = userAuth.Role,
                     Token = token
                 };
@@ -117,6 +118,50 @@ namespace CinemaAppBE.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, err.Message);
             }
         }
+
+        [HttpGet("[action]/{id:Guid}")]
+        public async Task<ActionResult> GetUserById([FromRoute] Guid id)
+        {
+            try
+            {
+                var user = await _db.Users.FindAsync(id);
+                if (user != null)
+                {
+                    return StatusCode(StatusCodes.Status200OK, user);
+                }
+
+                return StatusCode(StatusCodes.Status404NotFound, "Not Found!");
+            }
+            catch (Exception err)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, err.Message);
+            }
+        }
+
+        //Update User
+        [HttpPut("{id:Guid}")]
+        public async Task<ActionResult> UpdateUser([FromRoute] Guid id, [FromBody] UpdateUserDTO userObj)
+        {
+            try
+            {
+                var user = await _db.Users.FindAsync(id);
+                if (user != null)
+                {
+                    user.Name = userObj.Name;
+                    user.Password = BCrypt.Net.BCrypt.HashPassword(userObj.Password);
+                    await _db.SaveChangesAsync();
+
+                    return StatusCode(StatusCodes.Status200OK, user);
+                }
+
+                return StatusCode(StatusCodes.Status404NotFound, "Not Found");
+            }
+            catch (Exception err)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, err.Message);
+            }
+        }
+
         //private DataContext _dbContext;
         //private IConfiguration _configuration;
         //private readonly AuthService _auth;
