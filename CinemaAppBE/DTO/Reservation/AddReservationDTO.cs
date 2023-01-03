@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CinemaAppBE.DTO
+namespace CinemaAppBE.DTO.Reservation
 {
     public class AddReservationDTO
     {

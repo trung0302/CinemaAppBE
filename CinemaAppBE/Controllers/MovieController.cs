@@ -1,5 +1,5 @@
 ﻿using CinemaAppBE.Data;
-using CinemaAppBE.DTO;
+using CinemaAppBE.DTO.Movie;
 using CinemaAppBE.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -158,6 +158,36 @@ namespace CinemaAppBE.Controllers
                                   Genre = movie.Genre,
                               })
                              .ToList();
+                return StatusCode(StatusCodes.Status200OK, movies);
+            }
+            catch (Exception err)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, err.Message);
+            }
+        }
+
+        //Phim rating cao
+        //[Authorize]
+        [HttpGet("[action]")]
+        public async Task<ActionResult> MovieRating()
+        {
+            try
+            {
+                var movies = (from movie in _db.Movies
+                              select new
+                              {
+                                  Id = movie.Id,
+                                  ImageUrl = movie.ImageUrl,
+                                  Name = movie.Name,
+                                  Duration = movie.Duration,
+                                  Language = movie.Language,
+                                  Rating = movie.Rating,
+                                  Genre = movie.Genre,
+                              })
+                              .OrderByDescending(i => i.Rating)
+                              .Skip(0).Take(6)
+                              .ToList();
+
                 return StatusCode(StatusCodes.Status200OK, movies);
             }
             catch (Exception err)
