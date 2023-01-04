@@ -38,7 +38,31 @@ namespace CinemaAppBE.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, err.Message);
             }
         }
-        
+
+        [HttpGet("[action]")]
+        public ActionResult FindTheaters([FromQuery] string? name)
+        {
+            try
+            {
+                var theaters = from theater in _db.Theaters
+                               where theater.Name.ToLower().Contains(name.ToLower())
+                               select new Theater
+                               {
+                                   Id = theater.Id,
+                                   Name = theater.Name,
+                                   Location = theater.Location,
+                                   ImageUrl = theater.ImageUrl,
+                               };
+
+                return StatusCode(StatusCodes.Status200OK, theaters);
+
+            }
+            catch (Exception err)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, err.Message);
+            }
+        }
+
         [HttpPost]
         public async Task<ActionResult> PostTheater([FromBody] AddTheaterDTO theaterObj)
         {
@@ -62,6 +86,7 @@ namespace CinemaAppBE.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, err.Message);
             }
         }
+
 
         //Xóa
         [HttpDelete("{id:Guid}")]

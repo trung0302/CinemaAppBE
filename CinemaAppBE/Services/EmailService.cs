@@ -23,7 +23,7 @@ namespace CinemaAppBE.Services
                 $"<td style=\" border: 1px solid #ddd;\" >{movie.Name}</td>" +
                 $"<td style=\" border: 1px solid #ddd;\" >Vé</td>" +
                 $"<td style=\" border: 1px solid #ddd;\" >{reservation.Quantity}</td>" +
-                $"<td style=\" border: 1px solid #ddd;\" >{string.Format("{0:n0}", reservation.Price/reservation.Quantity)} VNĐ</td>" +
+                $"<td style=\" border: 1px solid #ddd;\" >{string.Format("{0:n0}", (reservation.Price/reservation.Quantity))} VNĐ</td>" +
                 $"<td style=\" border: 1px solid #ddd;\" >{string.Format("{0:n0}", reservation.Price)} VNĐ</td>" +
                 $"</tr>";
             

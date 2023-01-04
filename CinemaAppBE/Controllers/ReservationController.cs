@@ -35,6 +35,7 @@ namespace CinemaAppBE.Controllers
                     Price = reservationObj.Price,
                     Quantity = reservationObj.Quantity,
                     PhuongThuc = reservationObj.PhuongThuc,
+                    Theater = reservationObj.Theater,
                     UserId = reservationObj.UserId,
                     MovieId = reservationObj.MovieId,
                     ReservationTime = DateTime.Now,

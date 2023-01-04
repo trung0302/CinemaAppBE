@@ -13,6 +13,8 @@ namespace CinemaAppBE.DTO.Reservation
         [Required]
         public string PhuongThuc { get; set; }
         [Required]
+        public string Theater { get; set; }
+        [Required]
         public Guid MovieId { get; set; }
         [Required]
         public Guid UserId { get; set; }
