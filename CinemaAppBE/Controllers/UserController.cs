@@ -96,6 +96,29 @@ namespace CinemaAppBE.Controllers
 
         }
 
+        //Logout
+        [HttpPost("[action]")]
+        public async Task<ActionResult<GetUser>> Logout([FromHeader] string Authorization)
+        {
+            try
+            {
+                var checkToken = _auth.CheckTokenLogout(Authorization.Substring(7), _db);
+                if (checkToken == null)
+                {
+                    return StatusCode(StatusCodes.Status401Unauthorized, "Please authenticate");
+                }
+
+                _db.Tokens.Remove(checkToken);
+                await _db.SaveChangesAsync();
+
+                return StatusCode(StatusCodes.Status200OK, "Ok");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
         //Lấy tất cả User
         [HttpGet("[action]")]
         public async Task<ActionResult> GetAllUser()

@@ -14,6 +14,8 @@ namespace CinemaAppBE.Models
         [Required]
         public string PhuongThuc { get; set; }
         [Required]
+        public string Theater { get; set; }
+        [Required]
         public DateTime ReservationTime { get; set; }
         public Guid MovieId { get; set; }
         public Guid UserId { get; set; }
