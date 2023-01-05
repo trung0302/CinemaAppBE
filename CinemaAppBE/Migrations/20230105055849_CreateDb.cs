@@ -28,13 +28,28 @@ namespace CinemaAppBE.Migrations
                     TrailorUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     FullImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    advice = table.Column<bool>(type: "bit", nullable: false),
+                    Advice = table.Column<bool>(type: "bit", nullable: false),
+                    IsRelease = table.Column<bool>(type: "bit", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Movies", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Theaters",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Theaters", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -62,6 +77,7 @@ namespace CinemaAppBE.Migrations
                     Price = table.Column<double>(type: "float", nullable: false),
                     Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhuongThuc = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Theater = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReservationTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     MovieId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
@@ -123,6 +139,9 @@ namespace CinemaAppBE.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Reservations");
+
+            migrationBuilder.DropTable(
+                name: "Theaters");
 
             migrationBuilder.DropTable(
                 name: "Tokens");
