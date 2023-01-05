@@ -38,7 +38,8 @@ namespace CinemaAppBE.Controllers
                                  ImageUrl = movie.ImageUrl,
                                  PlayingDate = movie.PlayingDate,
                                  PlayingTime = movie.PlayingTime,
-                                 Advice = movie.Advice
+                                 Advice = movie.Advice,
+                                 IsRelease = movie.IsRelease,
                              };
 
                 switch (sort)
@@ -65,18 +66,21 @@ namespace CinemaAppBE.Controllers
             try
             {
                 var films = (from movie in _db.Movies
+                             where movie.IsRelease.Equals(false)
                              select new
                              {
                                  Id = movie.Id,
                                  Name = movie.Name,
                                  Language = movie.Language,
+                                 Duration = movie.Duration,
                                  PlayingDate = movie.PlayingDate,
                                  FullImageUrl = movie.FullImageUrl,
                                  CreatedAt = movie.CreatedAt,
                                  UpdatedAt = movie.UpdatedAt,
+                                 IsRelease = movie.IsRelease
                              })
                              .ToList()
-                             .OrderByDescending(mv => DateTime.Parse(mv.PlayingDate))
+                             .OrderBy(mv => DateTime.Parse(mv.PlayingDate))
                              .Skip(0)
                              .Take(3)
                              .ToList();
@@ -118,7 +122,7 @@ namespace CinemaAppBE.Controllers
             try
             {
                 var movies = (from movie in _db.Movies
-                             where movie.Genre.Equals(genre)
+                             where movie.Genre.Equals(genre) && movie.IsRelease.Equals(true)
                              select new
                              {
                                  Id = movie.Id,
@@ -128,6 +132,7 @@ namespace CinemaAppBE.Controllers
                                  Language = movie.Language,
                                  Rating = movie.Rating,
                                  Genre = movie.Genre,
+                                 IsRelease = movie.IsRelease
                              })
                              .ToList();
                 return StatusCode(StatusCodes.Status200OK, movies);
@@ -146,7 +151,7 @@ namespace CinemaAppBE.Controllers
             try
             {
                 var movies = (from movie in _db.Movies
-                              where movie.Advice.Equals(true)
+                              where movie.Advice.Equals(true) && movie.IsRelease.Equals(true)
                               select new
                               {
                                   Id = movie.Id,
@@ -156,6 +161,7 @@ namespace CinemaAppBE.Controllers
                                   Language = movie.Language,
                                   Rating = movie.Rating,
                                   Genre = movie.Genre,
+                                  IsRelease = movie.IsRelease
                               })
                              .ToList();
                 return StatusCode(StatusCodes.Status200OK, movies);
@@ -174,6 +180,7 @@ namespace CinemaAppBE.Controllers
             try
             {
                 var movies = (from movie in _db.Movies
+                              where movie.IsRelease.Equals(true)
                               select new
                               {
                                   Id = movie.Id,
@@ -186,6 +193,39 @@ namespace CinemaAppBE.Controllers
                               })
                               .OrderByDescending(i => i.Rating)
                               .Skip(0).Take(6)
+                              .ToList();
+
+                return StatusCode(StatusCodes.Status200OK, movies);
+            }
+            catch (Exception err)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, err.Message);
+            }
+        }
+
+        //Phim cbi ra mat
+        //[Authorize]
+        [HttpGet("[action]")]
+        public async Task<ActionResult> MovieHot()
+        {
+            try
+            {
+                var movies = (from movie in _db.Movies
+                              where movie.IsRelease.Equals(false)
+                              select new
+                              {
+                                  Id = movie.Id,
+                                  PlayingDate = movie.PlayingDate,
+                                  ImageUrl = movie.ImageUrl,
+                                  FullImageUrl = movie.FullImageUrl,
+                                  Description = movie.Description,
+                                  Name = movie.Name,
+                                  Duration = movie.Duration,
+                                  Language = movie.Language,
+                                  Rating = movie.Rating,
+                                  Genre = movie.Genre,
+                                  IsRelease = movie.IsRelease
+                              })
                               .ToList();
 
                 return StatusCode(StatusCodes.Status200OK, movies);
@@ -241,7 +281,8 @@ namespace CinemaAppBE.Controllers
                     TrailorUrl = movieObj.TrailorUrl,
                     ImageUrl = movieObj.ImageUrl,
                     FullImageUrl = movieObj.FullImageUrl,
-                    Advice = movieObj.Advice
+                    Advice = movieObj.Advice,
+                    IsRelease = movieObj.IsRelease
                 };
 
                 await _db.Movies.AddAsync(movie);

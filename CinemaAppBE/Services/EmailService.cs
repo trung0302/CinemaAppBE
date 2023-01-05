@@ -49,6 +49,10 @@ namespace CinemaAppBE.Services
                 $"<td>{movie.PlayingTime}</td>" +
                 $"</tr>" +
                 $"<tr>" +
+                $"<th style=\"text-align:left\">Rạp phim: </th>" +
+                $"<td>{reservation.Theater}</td>" +
+                $"</tr>" +
+                $"<tr>" +
                 $"<th style=\"text-align:left\">Thời gian đặt vé: </th>" +
                 $"<td>{String.Format("{0:dd/MM/yyyy HH:mm:ss}", reservation.ReservationTime)}</td>" +
                 $"</tr>" +
