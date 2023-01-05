@@ -30,7 +30,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TrungConnections"));
+    //options.UseSqlServer(builder.Configuration.GetConnectionString("TrungConnections"));
+    //options.UseSqlServer(builder.Configuration.GetConnectionString("BaoConnections"));
 });
 
 builder.Services.AddScoped<IEmailService, EmailService>();

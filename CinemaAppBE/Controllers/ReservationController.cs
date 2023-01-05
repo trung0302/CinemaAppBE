@@ -6,13 +6,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
 using System.Data;
 
-namespace CinemaAppBE.Controllers
+namespace cinemaappbe.controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ReservationController : ControllerBase
+    public class reservationcontroller : ControllerBase
     {
         private readonly DataContext _db;
         private readonly IEmailService _email;
@@ -55,7 +56,7 @@ namespace CinemaAppBE.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, err.Message);
             }
         }
-        
+
         //Xem chi tiết vé
         [HttpGet("[action]")]
         public async Task<ActionResult> GetTickets([FromQuery] Guid userId)
@@ -137,7 +138,7 @@ namespace CinemaAppBE.Controllers
                                      }).FirstOrDefault();
             if (reservationResult != null)
             {
-                return StatusCode(StatusCodes.Status200OK ,reservationResult);
+                return StatusCode(StatusCodes.Status200OK, reservationResult);
             }
 
             return StatusCode(StatusCodes.Status404NotFound, "Not Found!");
