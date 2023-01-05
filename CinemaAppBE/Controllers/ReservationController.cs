@@ -1,6 +1,7 @@
 ﻿using CinemaAppBE.Data;
-using CinemaAppBE.DTO;
+using CinemaAppBE.DTO.Reservation;
 using CinemaAppBE.Models;
+using CinemaAppBE.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,9 +16,11 @@ namespace cinemaappbe.controllers
     public class reservationcontroller : ControllerBase
     {
         private readonly DataContext _db;
-        public reservationcontroller(DataContext db)
+        private readonly IEmailService _email;
+        public ReservationController(DataContext db, IEmailService email)
         {
             _db = db;
+            _email = email;
         }
 
         //[Authorize]
@@ -32,6 +35,8 @@ namespace cinemaappbe.controllers
                     Phone = reservationObj.Phone,
                     Price = reservationObj.Price,
                     Quantity = reservationObj.Quantity,
+                    PhuongThuc = reservationObj.PhuongThuc,
+                    Theater = reservationObj.Theater,
                     UserId = reservationObj.UserId,
                     MovieId = reservationObj.MovieId,
                     ReservationTime = DateTime.Now,
@@ -39,6 +44,10 @@ namespace cinemaappbe.controllers
 
                 await _db.Reservations.AddAsync(reservation);
                 await _db.SaveChangesAsync();
+
+                var customer = _db.Users.FirstOrDefault(u => u.Id == reservation.UserId);
+
+                _email.SendTicketEmail(customer.Email, reservation);
 
                 return StatusCode(StatusCodes.Status201Created, reservation);
             }
@@ -59,12 +68,17 @@ namespace cinemaappbe.controllers
                                where reservation.UserId.Equals(userId)
                                select new
                                {
-                                   FullImageUrl = movie.FullImageUrl,
+                                   Name = movie.Name,
+                                   Duration = movie.Duration,
                                    PlayingDate = movie.PlayingDate,
                                    PlayingTime = movie.PlayingTime,
-                                   Name = movie.Name,
+                                   Price = reservation.Price,
+                                   Quantity = reservation.Quantity,
+                                   ImageUrl = movie.ImageUrl,
                                    ReservationTime = reservation.ReservationTime,
-                               }).ToList();
+                               })
+                               .OrderByDescending(i => i.ReservationTime)
+                               .ToList();
 
                 return StatusCode(StatusCodes.Status200OK, tickets);
             }

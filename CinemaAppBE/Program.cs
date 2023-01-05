@@ -1,4 +1,5 @@
 using CinemaAppBE.Data;
+using CinemaAppBE.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -32,6 +33,8 @@ builder.Services.AddDbContext<DataContext>(options =>
     //options.UseSqlServer(builder.Configuration.GetConnectionString("TrungConnections"));
     //options.UseSqlServer(builder.Configuration.GetConnectionString("BaoConnections"));
 });
+
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var MyAllowSpecificOrigins = "CorsPolicy";
 builder.Services.AddCors(options =>

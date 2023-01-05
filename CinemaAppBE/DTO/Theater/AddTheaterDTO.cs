@@ -1,14 +1,14 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CinemaAppBE.DTO
+namespace CinemaAppBE.DTO.Theater
 {
-    public class UserRegisterDTO
+    public class AddTheaterDTO
     {
         [Required]
         public string Name { get; set; }
         [Required]
-        public string Email { get; set; }
+        public string Location { get; set; }
         [Required]
-        public string Password { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

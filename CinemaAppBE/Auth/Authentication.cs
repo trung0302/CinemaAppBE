@@ -1,5 +1,5 @@
 ﻿using CinemaAppBE.Data;
-using CinemaAppBE.DTO;
+using CinemaAppBE.DTO.User;
 using CinemaAppBE.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -70,6 +70,7 @@ namespace CinemaAppBE.Auth
                         Name = currentUser.Name,
                         Email = currentUser.Email,
                         Role = currentUser.Role,
+                        Password = currentUser.Password
                     };
                     return getUser;
                 }

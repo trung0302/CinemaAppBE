@@ -1,5 +1,5 @@
 ﻿using CinemaAppBE.Data;
-using CinemaAppBE.DTO;
+using CinemaAppBE.DTO.Movie;
 using CinemaAppBE.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -35,7 +35,10 @@ namespace CinemaAppBE.Controllers
                                  Language = movie.Language,
                                  Rating = movie.Rating,
                                  Genre = movie.Genre,
-                                 ImageUrl = movie.ImageUrl
+                                 ImageUrl = movie.ImageUrl,
+                                 PlayingDate = movie.PlayingDate,
+                                 PlayingTime = movie.PlayingTime,
+                                 Advice = movie.Advice
                              };
 
                 switch (sort)
@@ -55,6 +58,7 @@ namespace CinemaAppBE.Controllers
         }
 
         //Get 3 phim mới nhất
+
         [HttpGet("[action]")]
         public async Task<ActionResult> GetThreeFilms()
         {
@@ -66,10 +70,13 @@ namespace CinemaAppBE.Controllers
                                  Id = movie.Id,
                                  Name = movie.Name,
                                  Language = movie.Language,
+                                 PlayingDate = movie.PlayingDate,
                                  FullImageUrl = movie.FullImageUrl,
                                  CreatedAt = movie.CreatedAt,
                                  UpdatedAt = movie.UpdatedAt,
-                             }).OrderByDescending(mv => mv.CreatedAt)
+                             })
+                             .ToList()
+                             .OrderByDescending(mv => DateTime.Parse(mv.PlayingDate))
                              .Skip(0)
                              .Take(3)
                              .ToList();
@@ -81,7 +88,7 @@ namespace CinemaAppBE.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, err.Message);
             }
         }
-        
+
         //Tìm phim theo Id
         //[Authorize]
         [HttpGet("[action]/{id:Guid}")]
@@ -114,9 +121,73 @@ namespace CinemaAppBE.Controllers
                              where movie.Genre.Equals(genre)
                              select new
                              {
+                                 Id = movie.Id,
                                  ImageUrl = movie.ImageUrl,
+                                 Name = movie.Name,
+                                 Duration = movie.Duration,
+                                 Language = movie.Language,
+                                 Rating = movie.Rating,
+                                 Genre = movie.Genre,
                              })
                              .ToList();
+                return StatusCode(StatusCodes.Status200OK, movies);
+            }
+            catch (Exception err)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, err.Message);
+            }
+        }
+
+        //Phim theo advice true
+        //[Authorize]
+        [HttpGet("[action]")]
+        public async Task<ActionResult> MovieAdvice()
+        {
+            try
+            {
+                var movies = (from movie in _db.Movies
+                              where movie.Advice.Equals(true)
+                              select new
+                              {
+                                  Id = movie.Id,
+                                  ImageUrl = movie.ImageUrl,
+                                  Name = movie.Name,
+                                  Duration = movie.Duration,
+                                  Language = movie.Language,
+                                  Rating = movie.Rating,
+                                  Genre = movie.Genre,
+                              })
+                             .ToList();
+                return StatusCode(StatusCodes.Status200OK, movies);
+            }
+            catch (Exception err)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, err.Message);
+            }
+        }
+
+        //Phim rating cao
+        //[Authorize]
+        [HttpGet("[action]")]
+        public async Task<ActionResult> MovieRating()
+        {
+            try
+            {
+                var movies = (from movie in _db.Movies
+                              select new
+                              {
+                                  Id = movie.Id,
+                                  ImageUrl = movie.ImageUrl,
+                                  Name = movie.Name,
+                                  Duration = movie.Duration,
+                                  Language = movie.Language,
+                                  Rating = movie.Rating,
+                                  Genre = movie.Genre,
+                              })
+                              .OrderByDescending(i => i.Rating)
+                              .Skip(0).Take(6)
+                              .ToList();
+
                 return StatusCode(StatusCodes.Status200OK, movies);
             }
             catch (Exception err)
@@ -138,7 +209,7 @@ namespace CinemaAppBE.Controllers
                              {
                                  Id = movie.Id,
                                  Name = movie.Name,
-                                 FullImageUrl = movie.FullImageUrl
+                                 ImageUrl = movie.ImageUrl,
                              };
                 return StatusCode(StatusCodes.Status200OK, movies);
             }
@@ -170,6 +241,7 @@ namespace CinemaAppBE.Controllers
                     TrailorUrl = movieObj.TrailorUrl,
                     ImageUrl = movieObj.ImageUrl,
                     FullImageUrl = movieObj.FullImageUrl,
+                    Advice = movieObj.Advice
                 };
 
                 await _db.Movies.AddAsync(movie);

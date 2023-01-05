@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CinemaAppBE.DTO
+namespace CinemaAppBE.DTO.Movie
 {
     public class AddMovieDTO
     {
@@ -28,6 +28,8 @@ namespace CinemaAppBE.DTO
         public string ImageUrl { get; set; }
         [Required]
         public string FullImageUrl { get; set; }
+        [Required]
+        public bool Advice { get; set; } = false;
         [Required]
         public DateTime CreatedAt { get; set; }
         [Required]
