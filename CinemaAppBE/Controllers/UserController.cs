@@ -92,7 +92,28 @@ namespace CinemaAppBE.Controllers
 
         }
 
+       // Lấy tất cả User
+        [HttpGet("[action]")]
+        public async Task<ActionResult> GetAllUser()
+        {
+            try
+            {
+                var users = (from user in _db.Users
+                             select new
+                             {
+                                 Id = user.Id,
+                                 Name = user.Name,
+                                 Email = user.Email,
+                                 Role = user.Role,
+                             }).ToList();
 
+                return StatusCode(StatusCodes.Status200OK, users);
+            }
+            catch (Exception err)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, err.Message);
+            }
+        }
         //private DataContext _dbContext;
         //private IConfiguration _configuration;
         //private readonly AuthService _auth;
@@ -145,15 +166,16 @@ namespace CinemaAppBE.Controllers
 
         //    var token = _auth.GenerateAccessToken(claim);
         //    return new ObjectResult(
-        //        new {
-        //        access_token = token.AccessToken,
-        //        expires_in = token.ExpiresIn,
-        //        token_type = token.TokenType,
-        //        creation_Time = token.ValidFrom,
-        //        expiration_Time = token.ValidTo,
-        //        user_id = userEmail.Id,
-        //        user_Name = userEmail.Name
-        //    });
+        //        new
+        //        {
+        //            access_token = token.AccessToken,
+        //            expires_in = token.ExpiresIn,
+        //            token_type = token.TokenType,
+        //            creation_Time = token.ValidFrom,
+        //            expiration_Time = token.ValidTo,
+        //            user_id = userEmail.Id,
+        //            user_Name = userEmail.Name
+        //        });
         //}
     }
 }
