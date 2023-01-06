@@ -9,11 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections;
 using System.Data;
 
-namespace cinemaappbe.controllers
+namespace CinemaAppBE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class reservationcontroller : ControllerBase
+    public class ReservationController : ControllerBase
     {
         private readonly DataContext _db;
         private readonly IEmailService _email;
