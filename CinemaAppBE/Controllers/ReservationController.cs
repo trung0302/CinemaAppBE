@@ -13,7 +13,7 @@ namespace cinemaappbe.controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class reservationcontroller : ControllerBase
+    public class ReservationController : ControllerBase
     {
         private readonly DataContext _db;
         private readonly IEmailService _email;
