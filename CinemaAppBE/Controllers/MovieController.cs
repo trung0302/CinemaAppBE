@@ -25,7 +25,7 @@ namespace CinemaAppBE.Controllers
             try
             {
                 var currentPageNumber = pageNumber ?? 1;
-                var currentPageSize = pageSize ?? 5;
+                var currentPageSize = pageSize ?? 100;
                 var movies = from movie in _db.Movies
                              select new
                              {
@@ -203,7 +203,7 @@ namespace CinemaAppBE.Controllers
             }
         }
 
-        //Phim cbi ra mat
+        //Phim cbi ra mắt
         //[Authorize]
         [HttpGet("[action]")]
         public async Task<ActionResult> MovieHot()
@@ -270,6 +270,7 @@ namespace CinemaAppBE.Controllers
                 {
                     Id = Guid.NewGuid(),
                     Name = movieObj.Name,
+                    SoVe = 100,
                     Description = movieObj.Description,
                     Language = movieObj.Language,
                     Duration = movieObj.Duration,

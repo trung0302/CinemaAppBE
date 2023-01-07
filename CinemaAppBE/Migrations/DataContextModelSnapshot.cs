@@ -76,6 +76,9 @@ namespace CinemaAppBE.Migrations
                     b.Property<double>("Rating")
                         .HasColumnType("float");
 
+                    b.Property<int>("SoVe")
+                        .HasColumnType("int");
+
                     b.Property<double>("TicketPrice")
                         .HasColumnType("float");
 
