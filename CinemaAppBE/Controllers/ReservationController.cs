@@ -43,6 +43,9 @@ namespace CinemaAppBE.Controllers
                 };
 
                 await _db.Reservations.AddAsync(reservation);
+                var movie = _db.Movies.FirstOrDefault(mv => mv.Id == reservation.MovieId);
+                movie.SoVe = movie.SoVe - reservation.Quantity;
+
                 await _db.SaveChangesAsync();
 
                 var customer = _db.Users.FirstOrDefault(u => u.Id == reservation.UserId);

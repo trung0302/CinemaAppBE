@@ -9,6 +9,8 @@ namespace CinemaAppBE.Models
         [Required]
         public string Name { get; set; }
         [Required]
+        public int SoVe { get; set; }
+        [Required]
         public string Description { get; set; }
         [Required]
         public string Language { get; set; }
