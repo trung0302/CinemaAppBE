@@ -18,6 +18,7 @@ namespace CinemaAppBE.Services
         public void SendTicketEmail(string emailTo, Reservation reservation)
         {
             var valueInvoiceString = "";
+            var theater = _db.Theaters.FirstOrDefault(t => t.Name == reservation.Theater);
             var movie = _db.Movies.FirstOrDefault(i => i.Id == reservation.MovieId);
             valueInvoiceString = valueInvoiceString + $"<tr style=\"text-align:center;\">" +
                 $"<td style=\" border: 1px solid #ddd;\" >{movie.Name}</td>" +
@@ -28,12 +29,16 @@ namespace CinemaAppBE.Services
                 $"</tr>";
             
             var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse("kingspeedmail2@gmail.com"));
+            email.From.Add(MailboxAddress.Parse("btcinemaa@gmail.com"));
             email.To.Add(MailboxAddress.Parse(emailTo));
             email.Subject = "Thông tin vé xem phim tại hệ thống rạp phim BTCinema";
             email.Body = new TextPart(TextFormat.Html)
             {
                 Text = $"<h2>BTCinema xin kính chào quý khách!</h2>" +
+                $"<div style=\"font-size: 14px; color: #333;\">{reservation.Theater}</div>" +
+                $"<div style=\"font-size: 14p; color: #333;\">{theater.Location}</div>" +
+                $"<div style=\"font-size: 14p; color: #333;\">1900 1088</div>" +
+                $"<br>" +
                 $"<h3 style=\"color: #04AA6D\">XÁC NHẬN ĐẶT VÉ THÀNH CÔNG</h3>" +
                 $"<table style=\"margin-left: 30px;\">" +
                 $"<tr>" +
@@ -47,6 +52,10 @@ namespace CinemaAppBE.Services
                 $"<tr>" +
                 $"<th style=\"text-align:left\">Giờ chiếu: </th>" +
                 $"<td>{movie.PlayingTime}</td>" +
+                $"</tr>" +
+                $"<tr>" +
+                $"<th style=\"text-align:left\">Rạp phim: </th>" +
+                $"<td>{reservation.Theater}</td>" +
                 $"</tr>" +
                 $"<tr>" +
                 $"<th style=\"text-align:left\">Thời gian đặt vé: </th>" +
@@ -71,12 +80,13 @@ namespace CinemaAppBE.Services
                 $"</tfoot>" +
                 $"</table>" +
                 $"<h4>Cảm ơn Quý khách đã xem phim tại BTCinema. Chúc Quý khách có một buổi xem phim vui vẻ.</h3>" +
-                $"<h4 style=\"color: #035e21;\">Vui lòng liên hệ đến Hotline 19001088 nếu quý khách có thắc mắc cần giải đáp.</h4>"
+                $"<h4 style=\"color: #035e21;\">Vui lòng liên hệ đến Hotline 19001088 nếu quý khách có thắc mắc cần giải đáp.</h4>" +
+                $"<p style=\"font-style: italic; font-size: 12px; color: #777;\">Đây là email tự động. Quý khách vui lòng không trả lời email này.</p>"
             };
 
             using var smtp = new SmtpClient();
             smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate("kingspeedmail2@gmail.com", "nefhyjpadboncuvo");
+            smtp.Authenticate("btcinemaa@gmail.com", "tqnpuzezcdugmmvi");
             smtp.Send(email);
             smtp.Disconnect(true);
         }

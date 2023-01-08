@@ -33,6 +33,8 @@ namespace CinemaAppBE.Models
         [Required]
         public bool Advice { get; set; } = false;
         [Required]
+        public bool IsRelease { get; set; } = true;
+        [Required]
         public DateTime CreatedAt { get; set; }
         [Required]
         public DateTime UpdatedAt { get; set; }

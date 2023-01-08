@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections;
 using System.Data;
 
-namespace cinemaappbe.controllers
+namespace CinemaAppBE.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
