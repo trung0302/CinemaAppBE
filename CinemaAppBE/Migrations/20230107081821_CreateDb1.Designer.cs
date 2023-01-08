@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CinemaAppBE.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230105055849_CreateDb")]
-    partial class CreateDb
+    [Migration("20230107081821_CreateDb1")]
+    partial class CreateDb1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -78,6 +78,9 @@ namespace CinemaAppBE.Migrations
 
                     b.Property<double>("Rating")
                         .HasColumnType("float");
+
+                    b.Property<int>("SoVe")
+                        .HasColumnType("int");
 
                     b.Property<double>("TicketPrice")
                         .HasColumnType("float");
