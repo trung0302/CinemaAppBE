@@ -14,6 +14,7 @@ namespace CinemaAppBE.Data
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Token> Tokens { get; set; }
+        public DbSet<VerifyCode> VerifyCodes { get; set; }
         public DbSet<Theater> Theaters { get; set; }
     }
 }

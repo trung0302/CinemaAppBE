@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace CinemaAppBE.Migrations
 {
     /// <inheritdoc />
-    public partial class CreateDb1 : Migration
+    public partial class CreateDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -119,6 +119,26 @@ namespace CinemaAppBE.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "VerifyCodes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VerifyCodes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_VerifyCodes_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Reservations_MovieId",
                 table: "Reservations",
@@ -133,6 +153,11 @@ namespace CinemaAppBE.Migrations
                 name: "IX_Tokens_UserId",
                 table: "Tokens",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VerifyCodes_UserId",
+                table: "VerifyCodes",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -146,6 +171,9 @@ namespace CinemaAppBE.Migrations
 
             migrationBuilder.DropTable(
                 name: "Tokens");
+
+            migrationBuilder.DropTable(
+                name: "VerifyCodes");
 
             migrationBuilder.DropTable(
                 name: "Movies");

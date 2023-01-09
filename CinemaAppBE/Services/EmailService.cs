@@ -90,5 +90,27 @@ namespace CinemaAppBE.Services
             smtp.Send(email);
             smtp.Disconnect(true);
         }
+        public void SendCodeEmail(string emailTo, string code)
+        {
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse("btcinemaa@gmail.com"));
+            email.To.Add(MailboxAddress.Parse(emailTo));
+            email.Subject = "Mã xác minh cho email khôi phục";
+            email.Body = new TextPart(TextFormat.Html)
+            {
+                Text = "<h2>BTCinema xin kính chào quý khách!</h2>" +
+                    "<br>" +
+                    "<p>Đây là mã xác nhận để khôi phục mật khẩu của bạn!</p>" +
+                    $"<h2>{code}</h2>" +
+                    $"<br>" +
+                    "<p style=\"font-style: italic; font-size: 14px; color: #777;\">Vui lòng không chia sẻ mã code này.</p>"
+            };
+
+            using var smtp = new SmtpClient();
+            smtp.Connect("smtp.gmail.com", 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate("btcinemaa@gmail.com", "tqnpuzezcdugmmvi");
+            smtp.Send(email);
+            smtp.Disconnect(true);
+        }
     }
 }
