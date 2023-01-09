@@ -4,6 +4,7 @@ using CinemaAppBE.Data;
 using CinemaAppBE.DTO.User;
 using CinemaAppBE.Models;
 using CinemaAppBE.Response;
+using CinemaAppBE.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +19,15 @@ namespace CinemaAppBE.Controllers
     public class UserController : ControllerBase
     {
         private readonly DataContext _db;
+        private readonly IEmailService _email;
         private Authentication _auth = new Authentication();
         private IConfiguration _config;
 
-        public UserController(DataContext db, IConfiguration configuration)
+        public UserController(DataContext db, IConfiguration configuration, IEmailService email)
         {
             _config = configuration;
             _db = db;
+            _email = email;
         }
 
         //Đăng ký
@@ -96,20 +99,20 @@ namespace CinemaAppBE.Controllers
 
         }
 
-
         //Logout
-        [HttpPost("[action]")]
-        public async Task<ActionResult<GetUser>> Logout([FromHeader] string Authorization)
+        [HttpPost("[action]/{id:Guid}")]
+        public async Task<ActionResult<GetUser>> Logout([FromRoute] Guid id)
         {
             try
             {
-                var checkToken = _auth.CheckTokenLogout(Authorization.Substring(7), _db);
-                if (checkToken == null)
+                var user = await _db.Users.FindAsync(id);
+                if (user == null)
                 {
-                    return StatusCode(StatusCodes.Status401Unauthorized, "Please authenticate");
+                    return StatusCode(StatusCodes.Status404NotFound, "Not Found!");
                 }
+                var token = _db.Tokens.FirstOrDefault(t => t.UserId == user.Id);
+                _db.Tokens.Remove(token);
 
-                _db.Tokens.Remove(checkToken);
                 await _db.SaveChangesAsync();
 
                 return StatusCode(StatusCodes.Status200OK, "Ok");
@@ -186,6 +189,64 @@ namespace CinemaAppBE.Controllers
                 return StatusCode(StatusCodes.Status400BadRequest, err.Message);
             }
         }
+
+        //Confirm User Reset Password
+        [HttpGet("[action]")]
+        public async Task<ActionResult> ConfirmUser([FromQuery] string email)
+        {
+            try
+            {
+                var user = _db.Users.FirstOrDefault(u => u.Email == email);
+
+                if (user != null)
+                {
+                    Random rdn = new Random();
+                    var code = rdn.Next(1001, 9999);
+                    var verifyCode = new VerifyCode()
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = user.Id,
+                        Code = code.ToString(),
+                        Email = email,
+                    };
+
+                    await _db.VerifyCodes.AddAsync(verifyCode);
+                    await _db.SaveChangesAsync();
+
+                    _email.SendCodeEmail(email, code.ToString());
+
+                    return StatusCode(StatusCodes.Status200OK, user);
+                }
+
+                return StatusCode(StatusCodes.Status404NotFound, "Not Found!");
+            }
+            catch (Exception err)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, err.Message);
+            }
+        }
+
+        //Get User By Email
+        [HttpGet("[action]")]
+        public async Task<ActionResult> GetUserByEmail([FromQuery] string email)
+        {
+            try
+            {
+                var user = _db.Users.FirstOrDefault(u => u.Email == email);
+
+                if (user != null)
+                {
+                    return StatusCode(StatusCodes.Status200OK, user);
+                }
+
+                return StatusCode(StatusCodes.Status404NotFound, "Not Found!");
+            }
+            catch (Exception err)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, err.Message);
+            }
+        }
+
 
         //private DataContext _dbContext;
         //private IConfiguration _configuration;
