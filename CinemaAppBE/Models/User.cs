@@ -16,5 +16,6 @@ namespace CinemaAppBE.Models
         public List<Reservation>? Reservations { get; set; }
         public string? VerifyToken { get; set; }
         public List<Token>? Token { get; set; }
+        public List<VerifyCode>? VerifyCode { get; set; }
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CinemaAppBE.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230107081821_CreateDb1")]
-    partial class CreateDb1
+    [Migration("20230109170338_CreateDb")]
+    partial class CreateDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -211,6 +211,30 @@ namespace CinemaAppBE.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("CinemaAppBE.Models.VerifyCode", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("VerifyCodes");
+                });
+
             modelBuilder.Entity("CinemaAppBE.Models.Reservation", b =>
                 {
                     b.HasOne("CinemaAppBE.Models.Movie", null)
@@ -235,6 +259,15 @@ namespace CinemaAppBE.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CinemaAppBE.Models.VerifyCode", b =>
+                {
+                    b.HasOne("CinemaAppBE.Models.User", null)
+                        .WithMany("VerifyCode")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CinemaAppBE.Models.Movie", b =>
                 {
                     b.Navigation("Reservations");
@@ -245,6 +278,8 @@ namespace CinemaAppBE.Migrations
                     b.Navigation("Reservations");
 
                     b.Navigation("Token");
+
+                    b.Navigation("VerifyCode");
                 });
 #pragma warning restore 612, 618
         }
